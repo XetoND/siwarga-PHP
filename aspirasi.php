@@ -159,6 +159,7 @@ $aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tan
                         <p class="card-text"><?=$a['alamat']?></p>
                         <p class="card-text"><?=$a['jenis_kategori']?></p>
                         <p class="card-text"><?= strlen($a['isi_aspirasi']) < 60 ? $a['isi_aspirasi'] : substr($a['isi_aspirasi'],0,60).'...' ?></p>
+                        <p class="d-flex flex-row-reverse card-body text-<?= $a['status_aspirasi'] ? 'success' : 'danger'?>"><?=$a['status_aspirasi'] ? 'Selesai' : 'Belum Selesai' ?></p>
                       </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
