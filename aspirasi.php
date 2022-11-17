@@ -1,6 +1,24 @@
 <?php
 require_once 'koneksi.php';
 
+if(isset($_POST['login'])){
+  $data = query("SELECT id, isAdmin FROM admin WHERE username='{$_POST['username']}' AND password= '{$_POST['password']}'");
+    if (!empty($data)) {
+        foreach($data as $d)
+        $_SESSION['login'] = $d['id'];
+        if($d['isAdmin']){
+            $_SESSION['isAdmin'] = $d['id'];
+        }
+        header('location: aspirasi.php');
+    }
+    else{
+      echo "
+            <script>
+                alert('Data Salah Silahkan Coba Lagi');
+            </script>";
+    }
+  }
+
 if(isset($_POST['lapor'])){
   if(aspirasi($_POST) > 0){
     echo" <script>

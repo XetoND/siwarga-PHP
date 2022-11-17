@@ -1,6 +1,24 @@
 <?php
 require_once 'koneksi.php';
 
+if(isset($_POST['login'])){
+  $data = query("SELECT id, isAdmin FROM admin WHERE username='{$_POST['username']}' AND password= '{$_POST['password']}'");
+    if (!empty($data)) {
+        foreach($data as $d)
+        $_SESSION['login'] = $d['id'];
+        if($d['isAdmin']){
+            $_SESSION['isAdmin'] = $d['id'];
+        }
+        header('location: detail_aspirasi.php');
+    }
+    else{
+      echo "
+            <script>
+                alert('Data Salah Silahkan Coba Lagi');
+            </script>";
+    }
+  }
+
 if(!isset($_GET['id'])){
     header('location: aspirasi.php');
 }
@@ -169,7 +187,7 @@ $feedback = query("SELECT id, feedback, isAdmin, created_at FROM feedbacks
                 </tr>
                 <tr>
                 <td>Tempat Kejadian</td>
-                <td><?= $a['alamat'] . $a['lokasi']?></td>
+                <td><?= $a['alamat'] .", ". $a['lokasi']?></td>
                 <td></td>
                 </tr>
                 <tr>
