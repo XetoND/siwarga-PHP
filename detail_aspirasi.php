@@ -1,24 +1,36 @@
 <?php
 require_once 'koneksi.php';
 
-if(isset($_POST['lapor'])){
-  if(aspirasi($_POST) > 0){
-    echo" <script>
-      alert('Aspirasi Berhasil Terkirim');
-      windows.location = 'aspirasi.php';
-      </script> ";
-  }else{
-    echo"<script>
-    alert('Aspirasi Gagal Dikirim');
-    </script>";
-  }
+if(!isset($_GET['id'])){
+    header('location: aspirasi.php');
 }
 
+if(isset($_POST['send'])){
+    sendFeedback($_POST);
+}
 
-$aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tanggal, a.status_aspirasi, c.jenis_kategori, p.nama_penduduk, p.alamat 
+if(isset($_POST['acc'])){
+    mysqli_query($conn, "UPDATE aspirasi set status_aspirasi = 1 WHERE id_aspirasi ={$_POST['idAspirasi']}");
+    header("location: aspirasi.php");
+  }
+  
+  if(isset($_POST['del'])){
+    mysqli_query($conn,"DELETE FROM aspirasi WHERE id_aspirasi = '{$_POST['idAspirasi']}'");
+    header("location: aspirasi.php");
+  }
+
+$aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tanggal, a.lokasi, a.status_aspirasi, c.jenis_kategori, p.nama_penduduk, p.alamat 
                     FROM aspirasi AS a INNER JOIN kategori AS c ON (c.id_kategori = a.id_kategori)
-                                        INNER JOIN penduduk AS p ON (p.id_penduduk = a.id_penduduk)       
+                                        INNER JOIN penduduk AS p ON (p.id_penduduk = a.id_penduduk)
+                    WHERE a.id_aspirasi = {$_GET['id']}       
                     ORDER BY a.status_aspirasi");
+
+$feedback = query("SELECT id, feedback, isAdmin, created_at FROM feedbacks
+                        WHERE aspirasi_id = {$_GET['id']}
+                        ORDER BY created_at");
+// var_dump($feedback);die;
+
+
 ?>
 
 <html lang="en">
@@ -131,52 +143,115 @@ $aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tan
   </nav>
     </main>
 
-    <main>
-        <section class="py-5 text-center container">
-            <div class="row py-lg-5">
-            <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="fw-light">Album example</h1>
-                <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
-                <p>
-                <input class="form-control my-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-secondary" type="submit"><i data-feather="search"></i></button>
-                </p>
-            </div>
-            </div>
-        </section>
-
-        <div class="album py-5 bg-light">
-            <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-5">
-            <?php 
-                foreach($aspirasi as $a):
-            ?>
-                <div class="col">
-                <div style="min-height: 290px;" class="card border-<?= $a['status_aspirasi'] ? 'success' : 'danger'?> shadow bg-body"  id="<?= $a['id_aspirasi']?>">
-                    <div class="d-flex flex-column justify-content-between card-body text">
-                      <div>
-                        <h2 class="card-text"><?=$a['judul_aspirasi']?></h2>
-                        <p class="card-text"><?=$a['alamat']?></p>
-                        <p class="card-text"><?=$a['jenis_kategori']?></p>
-                        <p class="card-text"><?= strlen($a['isi_aspirasi']) < 60 ? $a['isi_aspirasi'] : substr($a['isi_aspirasi'],0,60).'...' ?></p>
-                      </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                        <a href="http://localhost/siwarga-PHP/detail_aspirasi.php?id=<?= $a['id_aspirasi']?>" class="btn btn-sm btn-outline-secondary">View</a>
-                        </div>
-                        <small class="text-muted"><?=$a['tanggal']?></small>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            <?php 
-                endforeach; 
-            ?>
-            </div>
-            </div>
+    <div class="container-fluid mb-5">
+        <div class="container px-5">
+            <h1 class="mb-5">AspirasiRakyat</h1>
+            <?php foreach($aspirasi as $a)?>
+            <hr>
+            <table class="table table-striped table-sm">
+            <tbody>
+                <tr>
+                <td>Nomor</td>
+                <td><?= $a['id_aspirasi']?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Tanggal</td>
+                <td><?= $a['tanggal']?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Nama</td>
+                <td><?= $a['nama_penduduk']?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Status</td>
+                <td><?= $a['status_aspirasi'] ? 'Sudah selesai' : 'Belum selesai'?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Tempat Kejadian</td>
+                <td><?= $a['alamat'] . $a['lokasi']?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Jenis Masalah</td>
+                <td><?= $a['jenis_kategori']?></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td>Pesan</td>
+                <td colspan="2"><?= $a['isi_aspirasi']?></td>
+                </tr>
+            </tbody>
+            </table>
+        <hr class="mb-3 mt-5">
+        <form action="" method="post">
+        <div class="d-flex flex-row-reverse justify-content-between">
+            <input type="hidden" name="idAspirasi" value="<?= $a['id_aspirasi']?>">
+            <?php if(isset($_SESSION['login'])): ?>
+            <?php if(!$a['status_aspirasi']): ?>
+            <button class=" btn btn-lg btn-success" type="submit" name="acc">Selesai</button>
+            <?php endif; ?>
+            <button class=" btn btn-lg btn-danger" type="submit" name="del">Hapus</button>
+            <?php endif; ?>
         </div>
-    </main>
-
+        </form>
+        <hr class="mt-3 mb-5">
+        </div>
+        <div class="container d-flex justify-content-center">
+        <div class="col-md-8 col-lg-9 col-xl-10">
+        <?php 
+        foreach($feedback as $f):
+        if (!$f['isAdmin']):
+        ?>
+                <li class="d-flex justify-content-start mb-4" id="<?=$f['id']?>">
+                    <div class="card w-100">
+                    <div class="card-header d-flex justify-content-between p-3">
+                        <p class="fw-bold mb-0">Warga</p>
+                        <p class="text-muted small mb-0"><i class="far fa-clock"><?= $f['created_at']?></i> </p>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">
+                        <?=$f['feedback']?>
+                        </p>
+                    </div>
+                    </div>
+                </li>
+        <?php else: ?>
+                <li class="d-flex justify-content-end mb-4" id="<?=$f['id']?>">
+                    <div class="card w-100">
+                    <div class="card-header d-flex justify-content-between p-3">
+                        <p class="fw-bold mb-0">Admin</p>
+                        <p class="text-muted small mb-0"><i class="far fa-clock"><?= $f['created_at']?></i> </p>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">
+                        <?=$f['feedback']?>
+                        </p>
+                    </div>
+                    </div>
+                </li>
+        <?php
+        endif;
+        endforeach;
+        ?>
+                <form action="" method="post">
+                    <input type="hidden" name="aspirasi_id" value="<?=$a['id_aspirasi']?>">
+                    <div class="bg-white mb-3">
+                    <div class="form-outline">
+                        <p>Kirim Feedback</p>
+                        <textarea class="form-control" id="textAreaExample2" rows="4" name="feedback" required></textarea>
+                    </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-4 btn-rounded float-end" name="send">Send</button>
+                </form>
+                </ul>
+                <a id="back" href="http://localhost/siwarga-PHP/aspirasi.php" class="btn btn-primary mt-4">Back</a>
+            </div>
+            </div>
+    </div>
 
   <!-- FOOTER -->
     <footer class="container">
@@ -272,6 +347,3 @@ $aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tan
   <!-- END MODALS -->
   </body>
 </html>
-<?php 
-ob_end_flush();
-?>

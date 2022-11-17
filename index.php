@@ -340,7 +340,7 @@ if(isset($_POST['lapor'])){
               <input type="hidden" name="id_aspirasi" value="">
               <div class="text-center">
               <h2>Ada Masalah di Daerah Mu?</h2>
-              <p>Buat dan Kirim Laporan Sekarang Juga</p>
+              <p>Buat dan Kirim Laporan Sekarang Juga!!!</p>
               </div>
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="floatingInput" name="nama_penduduk">

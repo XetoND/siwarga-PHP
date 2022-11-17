@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 $conn = mysqli_connect("localhost","root","","siwarga");
 
@@ -34,6 +35,14 @@ function aspirasi($data){
 
   return mysqli_affected_rows($conn);
 
+}
+
+function sendFeedback($data){
+  global $conn;
+  $feedback = $data['feedback'];
+  $isAdmin = isset($_SESSION['isAdmin']) ? 1 : 0 ;
+  $aspirasi_id = $_GET['id'];
+  $conn->query("INSERT INTO feedbacks(feedback, isAdmin, aspirasi_id) VALUES ('$feedback', '$isAdmin', '$aspirasi_id');");
 }
 
 ?>
