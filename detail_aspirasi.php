@@ -130,9 +130,6 @@ $feedback = query("SELECT id, feedback, isAdmin, created_at FROM feedbacks
             <?php endif; ?>
             <?php if(isset($_SESSION['isAdmin'])):?>
             <li class="nav-item">
-              <a class="nav-link" href="dashboard.php">Dashboard</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="logout.php">Logout</a>
             </li>
             <?php endif;?>
