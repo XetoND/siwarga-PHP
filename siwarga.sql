@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 24, 2022 at 03:19 PM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.6
+-- Host: localhost:3306
+-- Generation Time: Nov 17, 2022 at 06:23 PM
+-- Server version: 10.4.25-MariaDB
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -58,6 +58,38 @@ CREATE TABLE `aspirasi` (
   `status_aspirasi` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `aspirasi`
+--
+
+INSERT INTO `aspirasi` (`id_aspirasi`, `id_penduduk`, `judul_aspirasi`, `lokasi`, `isi_aspirasi`, `id_kategori`, `tanggal`, `status_aspirasi`) VALUES
+(1, 1, 'Maling Di Rt.03', 'Rumah Pak Doni', 'Ada Maling ketangkap pak tolong segera kemari', 2, '2022-11-17 06:39:47', 1),
+(2, 2, 'Saluran Air Tersumbat', 'Warung Mpok Ida', 'dajiowamdownoanoefjnan olvjn envjunvejn voeaklv neaokvubagoevjkan ', 1, '2022-11-17 00:56:55', 0),
+(4, 2, 'Saluran Air Tersumbat', 'Warung Mpok Ida', 'dajiowamdownoanoefjnan olvjn envjunvejn voeaklv neaokvubagoevjkan ', 1, '2022-11-17 01:02:24', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedbacks`
+--
+
+CREATE TABLE `feedbacks` (
+  `id` int(11) NOT NULL,
+  `feedback` text NOT NULL,
+  `created_at` date NOT NULL DEFAULT current_timestamp(),
+  `isAdmin` tinyint(4) NOT NULL DEFAULT 0,
+  `aspirasi_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `feedbacks`
+--
+
+INSERT INTO `feedbacks` (`id`, `feedback`, `created_at`, `isAdmin`, `aspirasi_id`) VALUES
+(1, 'Lama COy\r\n', '2022-11-17', 0, 3),
+(2, 'Ditunggu Segera Pak', '2022-11-17', 1, 2),
+(3, 'Ditunggu Secepatnya Pak', '2022-11-17', 0, 4);
+
 -- --------------------------------------------------------
 
 --
@@ -91,6 +123,18 @@ CREATE TABLE `penduduk` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
+-- Dumping data for table `penduduk`
+--
+
+INSERT INTO `penduduk` (`id_penduduk`, `nama_penduduk`, `alamat`) VALUES
+(1, 'Seto Romie Dharmansyah', 'Jl.Bangun Nusa Raya'),
+(2, 'Kiani Rena', 'Jalan Raya 1'),
+(3, 'Kiani Rena', 'Jalan Raya 1'),
+(4, 'Kiani Rena', 'Jalan Raya 1'),
+(5, 'seto', 'adwad'),
+(6, 'dawdas', 'adwsadwa');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -107,6 +151,12 @@ ALTER TABLE `aspirasi`
   ADD PRIMARY KEY (`id_aspirasi`),
   ADD KEY `id_penduduk` (`id_penduduk`),
   ADD KEY `id_kategori` (`id_kategori`);
+
+--
+-- Indexes for table `feedbacks`
+--
+ALTER TABLE `feedbacks`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `kategori`
@@ -134,13 +184,19 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `aspirasi`
 --
 ALTER TABLE `aspirasi`
-  MODIFY `id_aspirasi` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_aspirasi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `feedbacks`
+--
+ALTER TABLE `feedbacks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `penduduk`
 --
 ALTER TABLE `penduduk`
-  MODIFY `id_penduduk` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_penduduk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
