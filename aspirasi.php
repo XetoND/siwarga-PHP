@@ -112,7 +112,7 @@ $aspirasi = query("SELECT a.id_aspirasi, a.judul_aspirasi, a.isi_aspirasi, a.tan
     <main>
   <nav class="navbar navbar-dark bg-dark" aria-label="Dark offcanvas navbar">
     <div class="container-fluid">
-      <a class="navbar-brand" data-bs-toggle="modal" data-bs-target="#loginModal" href="#">SI-WARGA</a>
+      <a class="navbar-brand" data-bs-toggle="modal" <?php if(!isset($_SESSION['isAdmin'])):?> data-bs-target="#loginModal" <?php endif;?> href="#">SI-WARGA</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbarDark" aria-controls="offcanvasNavbarDark">
         <span class="navbar-toggler-icon"></span>
       </button>
